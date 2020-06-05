@@ -76,7 +76,7 @@ class TUSimple(Dataset):
         binary = np.where(hmap>0, 1, 0)
         instance = hmap
 
-        show = True
+        show = False
         if show:
             plt.subplot(4,1,1)
             plt.imshow(image)
@@ -97,3 +97,11 @@ if __name__=="__main__":
     dataset = TUSimple("./tusimple_part")
     o = dataset[0]
     print(o[0].shape, o[1].shape) # (368, 640) (368, 640)
+
+    lanes = int(o[1].max())
+    plt.subplot(lanes+1,1,1)
+    plt.imshow(o[1])
+    for i in range(lanes):
+        plt.subplot(lanes+1,1,i+2)
+        plt.imshow(o[1]==(i+1))
+    plt.show()
