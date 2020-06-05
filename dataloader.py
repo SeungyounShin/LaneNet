@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 from scipy.ndimage.morphology import grey_dilation
 from scipy.interpolate import CubicSpline
-from utils.util import *
+#from utils.util import *
 from skimage import filters
 
 warnings.filterwarnings("ignore")
@@ -96,3 +96,4 @@ if __name__=="__main__":
     random.seed(a=None)
     dataset = TUSimple("./tusimple_part")
     o = dataset[0]
+    print(o[0].shape, o[1].shape) # (368, 640) (368, 640)
