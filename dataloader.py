@@ -62,12 +62,15 @@ class TUSimple(Dataset):
         point = 0
         for i in range(lane_cnt):
             mask = (lanes_w[i,:] * lanes_h) > 0
-            xs = (lanes_w[i,:][mask]-8) /728. * 368.
-            ys = lanes_h[mask]/1280. * 640.
-            #cs = CubicSpline(ys, xs)
-            #plt.scatter(xs,ys, s=4)
+            xs = (lanes_w[i,:][mask]-8) /1280. * 640.
+            ys = lanes_h[mask] /728. * 368.
+            ys = np.clip(ys, 0, 639)
             for j in range(xs.shape[0]):
-                hmap[int(ys[j]), int(xs[j])] = 1
+                try:
+                    hmap[int(ys[j]), int(xs[j])] = 1
+                except:
+                    print(ys)
+                    print(xs)
                 if(j<xs.shape[0]-1):
                     cv2.line(hmap, (int(xs[j]), int(ys[j])), (int(xs[j+1]), int(ys[j+1])), (i+1, i+1, i+1),  self.LINE_SIZE//2)
                 #hmap = draw_umich_gaussian(hmap, [int(xs[j]), int(ys[j])], 10)
@@ -89,19 +92,21 @@ class TUSimple(Dataset):
             plt.imshow(binary)
             plt.show()
 
-        return binary, instance
+        return image, binary, instance
 
 if __name__=="__main__":
     import random
     random.seed(a=None)
-    dataset = TUSimple("./tusimple_part")
-    o = dataset[0]
-    print(o[0].shape, o[1].shape) # (368, 640) (368, 640)
+    dataset = TUSimple("/home/yo0n/바탕화면/TUsimple")
+    o = dataset[random.randint(0,len(dataset)-1)]
+    print(o[0].shape, o[1].shape, o[2].shape) # (368, 640) (368, 640)
 
-    lanes = int(o[1].max())
-    plt.subplot(lanes+1,1,1)
-    plt.imshow(o[1])
+    lanes = int(o[2].max())
+    plt.subplot(lanes+2,1,1)
+    plt.imshow(o[0])
+    plt.subplot(lanes+2,1,2)
+    plt.imshow(o[2])
     for i in range(lanes):
-        plt.subplot(lanes+1,1,i+2)
-        plt.imshow(o[1]==(i+1))
+        plt.subplot(lanes+2,1,i+3)
+        plt.imshow(o[2]==(i+1))
     plt.show()
