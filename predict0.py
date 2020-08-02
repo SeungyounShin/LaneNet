@@ -57,7 +57,7 @@ for iteration,sample in enumerate(loader):
     cluster_labels = MeanShift_cluster.fit(lanes).labels_
     #cluster_labels = hdbscan_cluster.fit_predict(lanes)
     end_clustering = time.time()
-    
+
     #print(cluster_labels, np.unique(cluster_labels))
     #fig = plt.figure()
     #ax = fig.add_subplot(111, projection='3d')
@@ -66,6 +66,25 @@ for iteration,sample in enumerate(loader):
 
     instance_final[binary_pred > 0] = cluster_labels + 1
     #(4, 368, 640) (4, 368, 640) (42646,) (21323,)
+    lanes_cnt = np.unique(cluster_labels+1).max()
+
+    plt.imshow(instance_final)
+    for i in range(1,lanes_cnt+1):
+        tmp_lane = (instance_final == i)
+        indexs = np.where(tmp_lane>0)
+        ys = indexs[0]
+        xs = indexs[1]
+        z = np.polyfit(xs,ys,deg=2)
+        p = np.poly1d(z)
+
+        xp = np.linspace(0,640,100)
+
+        plt.plot(xp, p(xp) , '-')
+
+    plt.xlim(0,640)
+    plt.ylim(0,360)
+    plt.show()
+
 
     img = img.squeeze().permute(1,2,0).squeeze().cpu().numpy()
 
