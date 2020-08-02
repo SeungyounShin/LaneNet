@@ -1,31 +1,38 @@
 import torch
 import torch.nn as nn
 from models.ERFNet import *
+from models.coordconv import *
 
-class LaneNet(nn.Module):
+class LaneSeg(nn.Module):
     def __init__(self):
         super().__init__()
-        self.encoder = Encoder()
-        self.embedding = Decoder(num_classes = 4) #4d embedding
+
+        self.coordconv1 = CoordConv(3,16,kernel_size=3,stride=1, padding=1,bias=True)
+        self.bn1 = nn.BatchNorm2d(16)
+        self.relu = nn.ReLU(inplace=True)
+
+        self.encoder = Encoder(in_channels=16)
         self.segmentation = Decoder(num_classes = 2)
 
     def forward(self, x):
-        encoded = self.encoder(x)
+        x = self.coordconv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
 
-        embedding = self.embedding(encoded)
+        encoded = self.encoder(x)
         segmentation = self.segmentation(encoded)
 
-        return segmentation, embedding
+        return segmentation
 
 
 if __name__ == "__main__":
     import time
 
-    lanenet = LaneNet()
+    model = LaneSeg()
     x = torch.randn(2,3,512,256)
 
     startT = time.time()
-    out = lanenet(x)
+    out = model(x)
     endT = time.time()
 
 

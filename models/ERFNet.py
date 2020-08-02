@@ -61,13 +61,13 @@ class non_bottleneck_1d (nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channels=3):
         super().__init__()
-        self.initial_block = DownsamplerBlock(3,16)
+        self.initial_block = DownsamplerBlock(in_channels,32)
 
         self.layers = nn.ModuleList()
 
-        self.layers.append(DownsamplerBlock(16,64))
+        self.layers.append(DownsamplerBlock(32,64))
 
         for x in range(0, 5):    #5 times
            self.layers.append(non_bottleneck_1d(64, 0.03, 1))
